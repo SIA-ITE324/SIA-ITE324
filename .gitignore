@@ -1,0 +1,43 @@
+# CodeIgniter 4
+.env
+/vendor/
+/writable/
+/tests/
+
+# XAMPP specific
+/htdocs/
+
+# Uploads directory (exclude large files)
+/uploads/products/*
+!/uploads/products/.gitkeep
+
+# Logs and cache
+/writable/logs/*
+/writable/cache/*
+/writable/session/*
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+
+# Database backups
+*.sql.bak
+database_backups/
+
+# Composer
+composer.lock
+
+# Debug files
+debug_*.php
+test_*.php
+check_*.php

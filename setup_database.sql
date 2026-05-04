@@ -1,0 +1,190 @@
+-- Fleur Flower Order Management System Database Setup
+
+-- Create users table
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` int(5) unsigned NOT NULL AUTO_INCREMENT,
+  `first_name` varchar(100) NOT NULL,
+  `last_name` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `role` enum('admin','staff','customer') NOT NULL DEFAULT 'customer',
+  `status` enum('active','inactive','suspended') NOT NULL DEFAULT 'active',
+  `address` text DEFAULT NULL,
+  `city` varchar(100) DEFAULT NULL,
+  `state` varchar(100) DEFAULT NULL,
+  `postal_code` varchar(20) DEFAULT NULL,
+  `country` varchar(100) DEFAULT NULL,
+  `email_verified` tinyint(1) NOT NULL DEFAULT 0,
+  `email_verification_token` varchar(255) DEFAULT NULL,
+  `password_reset_token` varchar(255) DEFAULT NULL,
+  `password_reset_expires` datetime DEFAULT NULL,
+  `last_login` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Insert default users (password: "password")
+INSERT IGNORE INTO `users` (`first_name`, `last_name`, `email`, `password`, `role`, `status`, `created_at`, `updated_at`) VALUES
+('Admin', 'User', 'admin@fleur.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'active', NOW(), NOW()),
+('Staff', 'User', 'staff@fleur.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'staff', 'active', NOW(), NOW()),
+('Customer', 'User', 'customer@fleur.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'customer', 'active', NOW(), NOW());
+
+-- Create categories table
+CREATE TABLE IF NOT EXISTS `categories` (
+  `id` int(5) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `slug` varchar(100) NOT NULL,
+  `description` text DEFAULT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `parent_id` int(5) unsigned DEFAULT NULL,
+  `sort_order` int(3) NOT NULL DEFAULT 0,
+  `status` enum('active','inactive') NOT NULL DEFAULT 'active',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `slug` (`slug`),
+  KEY `parent_id` (`parent_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Insert sample categories
+INSERT IGNORE INTO `categories` (`name`, `slug`, `description`, `sort_order`, `status`, `created_at`, `updated_at`) VALUES
+('Roses', 'roses', 'Beautiful roses in various colors and arrangements', 1, 'active', NOW(), NOW()),
+('Lilies', 'lilies', 'Elegant lilies for any occasion', 2, 'active', NOW(), NOW()),
+('Tulips', 'tulips', 'Colorful tulips perfect for spring', 3, 'active', NOW(), NOW()),
+('Orchids', 'orchids', 'Exotic orchids for special occasions', 4, 'active', NOW(), NOW()),
+('Mixed Bouquets', 'mixed-bouquets', 'Beautiful mixed flower arrangements', 5, 'active', NOW(), NOW()),
+('Floral Arrangements', 'floral-arrangements', 'Professional floral arrangements for events', 6, 'active', NOW(), NOW());
+
+-- Create products table
+CREATE TABLE IF NOT EXISTS `products` (
+  `id` int(5) unsigned NOT NULL AUTO_INCREMENT,
+  `category_id` int(5) unsigned DEFAULT NULL,
+  `name` varchar(200) NOT NULL,
+  `slug` varchar(200) NOT NULL,
+  `description` text DEFAULT NULL,
+  `short_description` text DEFAULT NULL,
+  `sku` varchar(100) NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `sale_price` decimal(10,2) DEFAULT NULL,
+  `cost_price` decimal(10,2) DEFAULT NULL,
+  `stock_quantity` int(5) NOT NULL DEFAULT 0,
+  `min_stock_level` int(5) NOT NULL DEFAULT 5,
+  `weight` decimal(8,2) DEFAULT NULL,
+  `dimensions_length` decimal(8,2) DEFAULT NULL,
+  `dimensions_width` decimal(8,2) DEFAULT NULL,
+  `dimensions_height` decimal(8,2) DEFAULT NULL,
+  `images` text DEFAULT NULL,
+  `tags` text DEFAULT NULL,
+  `meta_title` varchar(200) DEFAULT NULL,
+  `meta_description` text DEFAULT NULL,
+  `status` enum('active','inactive','out_of_stock') NOT NULL DEFAULT 'active',
+  `is_featured` tinyint(1) NOT NULL DEFAULT 0,
+  `is_digital` tinyint(1) NOT NULL DEFAULT 0,
+  `track_stock` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `slug` (`slug`),
+  UNIQUE KEY `sku` (`sku`),
+  KEY `category_id` (`category_id`),
+  KEY `status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Insert sample products
+INSERT IGNORE INTO `products` (`category_id`, `name`, `slug`, `description`, `short_description`, `sku`, `price`, `sale_price`, `cost_price`, `stock_quantity`, `min_stock_level`, `weight`, `dimensions_length`, `dimensions_width`, `dimensions_height`, `images`, `tags`, `meta_title`, `meta_description`, `status`, `is_featured`, `is_digital`, `track_stock`, `created_at`, `updated_at`) VALUES
+(1, 'Red Rose Bouquet', 'red-rose-bouquet', 'A beautiful bouquet of fresh red roses, perfect for expressing love and romance.', '12 premium red roses with greenery', 'RB-001', 49.99, 44.99, 25.00, 50, 10, 1.5, 30.0, 25.0, 40.0, '["red-rose-bouquet-1.jpg", "red-rose-bouquet-2.jpg"]', '["romantic", "valentine", "love", "red"]', 'Red Rose Bouquet - Fresh Flowers', 'Order beautiful red rose bouquets online. Fresh flowers delivered to your door.', 'active', 1, 0, 1, NOW(), NOW()),
+(2, 'Pink Lily Bouquet', 'pink-lily-bouquet', 'Delicate pink lilies that bring beauty and fragrance to any room.', '10 pink lilies with filler flowers', 'PL-003', 39.99, NULL, 20.00, 40, 10, 1.2, 28.0, 22.0, 38.0, '["pink-lily-bouquet-1.jpg"]', '["pink", "fragrant", "delicate", "spring"]', 'Pink Lily Bouquet - Fragrant Flowers', 'Beautiful pink lilies with wonderful fragrance. Perfect for any occasion.', 'active', 0, 0, 1, NOW(), NOW()),
+(3, 'Colorful Tulip Mix', 'colorful-tulip-mix', 'A vibrant mix of colorful tulips that brighten any day.', '20 mixed color tulips', 'TM-004', 34.99, NULL, 18.00, 60, 15, 1.0, 25.0, 20.0, 35.0, '["tulip-mix-1.jpg", "tulip-mix-2.jpg"]', '["colorful", "spring", "mixed", "vibrant"]', 'Colorful Tulip Mix - Spring Flowers', 'Vibrant mix of colorful tulips perfect for spring and special occasions.', 'active', 1, 0, 1, NOW(), NOW());
+
+-- Create orders table
+CREATE TABLE IF NOT EXISTS `orders` (
+  `id` int(5) unsigned NOT NULL AUTO_INCREMENT,
+  `order_number` varchar(50) NOT NULL,
+  `customer_id` int(5) unsigned NOT NULL,
+  `status` enum('pending','confirmed','processing','shipped','delivered','cancelled','refunded') NOT NULL DEFAULT 'pending',
+  `payment_status` enum('pending','paid','failed','refunded') NOT NULL DEFAULT 'pending',
+  `payment_method` enum('cod','bank_transfer','credit_card','paypal') NOT NULL DEFAULT 'cod',
+  `subtotal` decimal(10,2) NOT NULL,
+  `tax_amount` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `shipping_amount` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `discount_amount` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `total_amount` decimal(10,2) NOT NULL,
+  `currency` varchar(3) NOT NULL DEFAULT 'USD',
+  `shipping_address` text NOT NULL,
+  `billing_address` text DEFAULT NULL,
+  `customer_notes` text DEFAULT NULL,
+  `admin_notes` text DEFAULT NULL,
+  `tracking_number` varchar(100) DEFAULT NULL,
+  `shipping_method` varchar(100) DEFAULT NULL,
+  `estimated_delivery` date DEFAULT NULL,
+  `actual_delivery` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `order_number` (`order_number`),
+  KEY `customer_id` (`customer_id`),
+  KEY `status` (`status`),
+  KEY `payment_status` (`payment_status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Create order_items table
+CREATE TABLE IF NOT EXISTS `order_items` (
+  `id` int(5) unsigned NOT NULL AUTO_INCREMENT,
+  `order_id` int(5) unsigned NOT NULL,
+  `product_id` int(5) unsigned NOT NULL,
+  `quantity` int(5) NOT NULL,
+  `unit_price` decimal(10,2) NOT NULL,
+  `total_price` decimal(10,2) NOT NULL,
+  `product_name` varchar(200) NOT NULL,
+  `product_sku` varchar(100) NOT NULL,
+  `product_image` varchar(255) DEFAULT NULL,
+  `product_options` text DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `order_id` (`order_id`),
+  KEY `product_id` (`product_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Create inventory table
+CREATE TABLE IF NOT EXISTS `inventory` (
+  `id` int(5) unsigned NOT NULL AUTO_INCREMENT,
+  `product_id` int(5) unsigned NOT NULL,
+  `quantity_before` int(5) NOT NULL,
+  `quantity_after` int(5) NOT NULL,
+  `quantity_change` int(5) NOT NULL,
+  `type` enum('sale','purchase','adjustment','return','damage','transfer') NOT NULL,
+  `reference_id` int(5) unsigned DEFAULT NULL,
+  `reference_type` varchar(50) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_by` int(5) unsigned NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `product_id` (`product_id`),
+  KEY `type` (`type`),
+  KEY `created_at` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Create activity_logs table
+CREATE TABLE IF NOT EXISTS `activity_logs` (
+  `id` int(5) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(5) unsigned DEFAULT NULL,
+  `action` varchar(100) NOT NULL,
+  `entity_type` varchar(50) NOT NULL,
+  `entity_id` int(5) unsigned DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `ip_address` varchar(45) DEFAULT NULL,
+  `user_agent` text DEFAULT NULL,
+  `old_values` text DEFAULT NULL,
+  `new_values` text DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `action` (`action`),
+  KEY `entity_type` (`entity_type`),
+  KEY `entity_id` (`entity_id`),
+  KEY `created_at` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

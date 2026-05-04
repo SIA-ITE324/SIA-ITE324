@@ -1,0 +1,21 @@
+# Simple .htaccess for Fleur Flower Order Management System
+
+# Enable directory listings
+Options +Indexes
+
+# Set default index files
+DirectoryIndex index.php index_simple.php index.html
+
+# Rewrite engine for clean URLs
+RewriteEngine On
+
+# If the requested file or directory doesn't exist
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Route to index.php by default
+RewriteRule ^(.*)$ index.php [L]
+
+# PHP settings
+php_flag display_errors On
+php_value error_reporting E_ALL
