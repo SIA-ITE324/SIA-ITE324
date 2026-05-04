@@ -1,0 +1,53 @@
+# CI_ENVIRONMENT = production
+
+# APP
+app.baseURL = 'http://localhost:8080/'
+app.indexPage = 'index.php'
+app.appTimezone = 'UTC'
+app.defaultLocale = 'en'
+app.negotiateLocale = false
+app.supportedLocales = ['en']
+
+# DATABASE
+database.default.hostname = localhost
+database.default.database = fleur_db
+database.default.username = root
+database.default.password = 
+database.default.DBDriver = MySQLi
+database.default.DBPrefix = 
+database.default.port = 3306
+
+# EMAIL
+email.fromEmail = noreply@fleur.com
+email.fromName = Fleur Order System
+email.SMTPHost = smtp-relay.brevo.com
+email.SMTPUser = your-brevo-api-key
+email.SMTPPass = your-brevo-smtp-key
+email.SMTPPort = 587
+email.SMTPCrypto = TLS
+
+# BREVO API
+brevo.apiKey = your-brevo-api-key
+
+# SESSION
+session.driver = file
+session.cookieName = ci_session
+session.expiration = 7200
+session.savePath = WRITEPATH . 'session'
+session.matchIP = false
+session.timeToUpdate = 300
+session.regenerateDestroy = false
+
+# COOKIE
+cookie.prefix = ''
+cookie.domain = ''
+cookie.path = '/'
+cookie.secure = false
+cookie.httponly = false
+cookie.samesite = Lax
+cookie.raw = false
+
+# UPLOAD
+upload.maxFileSize = 10240
+upload.allowedTypes = 'jpg,jpeg,png,gif,xlsx,xls,csv'
+upload.uploadPath = WRITEPATH . 'uploads'
